@@ -90,7 +90,7 @@ function vInv(){const D=S.draft,td=iso(new Date());if(!D.d||(!D.lines.length&&D.
  <datalist id="shops">${S.shops.map(o=>`<option value="${esc(o)}">`).join('')}</datalist><datalist id="offs">${S.offs.map(o=>`<option value="${esc(o)}">`).join('')}</datalist>
  <label>المكتب / الدلال</label>${dd(S.offs,D.off,'off','off')}
  <label>الصنف</label><select id="item" onchange="pick()"><option value="">اختر الصنف</option>${S.items.map(i=>`<option>${esc(i.n)}</option>`).join('')}</select>
- <div class="row">${n('q','عدد الفلين','q')}${n('b','سعر شراء الفلين','b')}</div><div class="row">${n('p','مكسبك على الفلين','p')}${n('s','سعر بيع الفلين','s')}</div>
+ <div class="row">${n('q','العدد','q')}${n('b','سعر الشراء','b')}</div><div class="row">${n('p','الربح','p')}${n('s','سعر البيع','s')}</div>
  <div class="li" style="margin-top:8px"><span>إجمالي الشراء (للمكتب)</span><b id="tb">0</b></div><div class="li"><span>إجمالي البيع (للتاجر)</span><b id="ts">0</b></div>
  <button onclick="addLine()">＋ إضافة</button></div>`+(D.lines.length?`<div class="card">${D.lines.map((r,i)=>`<div class="li"><div>${esc(r.item)}<small>${f(r.q)} فلين${r.off?' · '+esc(r.off):''}</small></div><div><small>شراء ${f(r.q*r.b)}</small><b>بيع ${f(r.q*r.s)}</b></div><button class="x" onclick="S.draft.lines.splice(${i},1);save();render()">×</button></div>`).join('')}<div class="li"><b>إجمالي الشراء</b><b>${f(tb)}</b></div><div class="li"><b>إجمالي البيع</b><b>${f(ts)}</b></div><button onclick="saveInv()">حفظ الفاتورة</button></div>`:'')}
 function pick(){const it=S.items.find(i=>i.n==$('item').value);if(it){$('b').value=it.b;$('p').value=it.p;calc('b')}}
@@ -99,7 +99,7 @@ function calc(c){const v=i=>parseFloat($(i).value),b=v('b')||0;
  else if(c=='b'||c=='p')$('s').value=$('b').value===''?'':Math.round((b+(v('p')||0))*100)/100;
  $('tb').textContent=f((v('q')||0)*b);$('ts').textContent=f((v('q')||0)*(v('s')||0))}
 function addLine(){const v=i=>parseFloat($(i).value),item=$('item').value,b=v('b'),q=v('q');
- if(!item)return toast('اختر الصنف');if(!(q>0))return toast('اكتب عدد الفلين');if(isNaN(b))return toast('اكتب سعر الشراء');
+ if(!item)return toast('اختر الصنف');if(!(q>0))return toast('اكتب العدد');if(isNaN(b))return toast('اكتب سعر الشراء');
  const s=isNaN(v('s'))?b+(v('p')||0):v('s'),off=$('off').value.trim(),
  go=()=>{S.draft.lines.push({item,q,b,s,off});if(off&&!S.offs.includes(off))S.offs.push(off);const it=S.items.find(i=>i.n==item);if(it){it.b=b;it.p=Math.round((s-b)*100)/100}save();render();toast('تمت الإضافة')};
  if(s<b)return ask(`سعر البيع (${f(s)}) أقل من سعر الشراء (${f(b)}) — خسارة ${f((b-s)*q)} ريال. إضافة رغم ذلك؟`,go);go()}
@@ -174,7 +174,7 @@ async function pdfShare(){const fl=new File([PB.blob],PB.name+'.pdf',{type:'appl
 function pdfSave(){const a=document.createElement('a');a.href=URL.createObjectURL(PB.blob);a.download=PB.name+'.pdf';document.body.appendChild(a);a.click();a.remove();toast('تم الحفظ ✓')}
 function pdfV(id){const v=S.vch.find(x=>x.id==id),q=v.k=='q';makePdf(mkDoc(q?'سند قبض':'سند صرف',vno(v),v.d,`<div style="border:1px solid #ccc;border-radius:8px;padding:14px;font-size:16px">تم ${q?'استلام':'صرف'} مبلغ <b>${f(v.a)} ريال</b> ${q?'من التاجر':'للمكتب'} <b>${esc(v.w)}</b><br>الطريقة: ${v.m=='bank'?'تحويل بنكي'+(v.ref?' - '+esc(v.ref):''):'كاش'}${v.note?'<br>ملاحظة: '+esc(v.note):''}</div><div style="margin-top:12px;font-size:16px">المتبقي ${q?'عليه':'له'}: <b>${f(v.r)} ريال</b></div>`,{name:v.by,ph:v.ph}),vno(v))}
 function pdfInv(n,t,w){const sh=t=='shop',u=sh?'s':'b',L=S.sales.filter(r=>r.inv==n&&!r.x&&(sh?r.shop==w:r.off==w));if(!L.length)return toast('لا توجد أصناف');const tot=L.reduce((s,r)=>s+r.q*r[u],0),rem=acc(t,w,'0',L[0].d).rem;
- makePdf(mkDoc(sh?'فاتورة':'فاتورة مشتريات',n,L[0].d,`<div style="margin-bottom:8px">${sh?'السيد / التاجر':'المكتب / الدلال'}: <b>${esc(w)}</b></div>`+tbl(['الصنف','فلين','سعر الفلين','المبلغ'],L.map(r=>[esc(r.item),f(r.q),f(r[u]),f(r.q*r[u])]))+`<div style="margin-top:10px;font-size:16px">إجمالي الفاتورة: <b>${f(tot)} ريال</b><br>${sh?'إجمالي المتبقي عليكم':'إجمالي المتبقي لكم'} حتى تاريخ هذه الفاتورة: <b>${f(rem)} ريال</b></div>`),'invoice-'+n)}
+ makePdf(mkDoc(sh?'فاتورة':'فاتورة مشتريات',n,L[0].d,`<div style="margin-bottom:8px">${sh?'السيد / التاجر':'المكتب / الدلال'}: <b>${esc(w)}</b></div>`+tbl(['الصنف','العدد','السعر','المبلغ'],L.map(r=>[esc(r.item),f(r.q),f(r[u]),f(r.q*r[u])]))+`<div style="margin-top:10px;font-size:16px">إجمالي الفاتورة: <b>${f(tot)} ريال</b><br>${sh?'إجمالي المتبقي عليكم':'إجمالي المتبقي لكم'} حتى تاريخ هذه الفاتورة: <b>${f(rem)} ريال</b></div>`),'invoice-'+n)}
 function pdfSt(t){const sh=t=='shop',[a,z]=RNG(),c=acc(t,sel,a,z),rows=c.LX.filter(r=>!r.x).map(r=>[r.d.slice(5),r.inv,esc(r.item),f(r.q),f(r[c.u]),f(r.q*r[c.u])]).concat(c.PX.filter(v=>!v.x).map(v=>[v.d.slice(5),vno(v),sh?'مقبوض':'مصروف','','',f(v.a)]));
  makePdf(mkDoc('كشف حساب','',iso(new Date()),`<div style="margin-bottom:8px">${sh?'التاجر':'المكتب'}: <b>${esc(sel)}</b> — الفترة: ${a} إلى ${z}</div>`+tbl(['التاريخ','رقم','الصنف','فلين','السعر','المبلغ'],rows)+`<div style="margin-top:10px;font-size:15px">الرصيد السابق: ${f(c.open)}<br>فواتير الفترة: ${f(c.bill)}<br>${sh?'المقبوض':'المصروف'}: ${f(c.paid)}<br><b>المتبقي: ${f(c.rem)} ريال</b></div>`),'statement-'+sel)}
 /* التقارير */
