@@ -22,7 +22,7 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 input,select,textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--in);color:var(--tx);font:inherit}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button{font:inherit;border:0;border-radius:10px;padding:13px;background:var(--pri);color:var(--ptx);font-weight:700;width:100%;margin-top:12px}
-button.alt{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+button.alt{background:transparent;color:var(--tx);border:1px solid var(--bd)}:root{--add:#0b7285;--atx:#fff}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--add:#3bc0d6;--atx:#06181c}}:root[data-theme="dark"]{--add:#3bc0d6;--atx:#06181c}button.add,button.pl.add{background:var(--add);color:var(--atx)}
 button.sm{width:auto;padding:6px 12px;margin:0}
 .big{font-size:24px;font-weight:800}.warn2{color:var(--warn)}.pos{color:var(--pos)}.neg{color:var(--neg)}.mut{color:var(--mut)}
 .cd{display:inline-block;padding:3px 10px;border-radius:7px;color:#fff;font-weight:700;font-size:13px;white-space:nowrap}.bgG{background:#2f9e55}.bgO{background:#e08a14}.bgR{background:#d64136}.bg0{background:#6b7280}
@@ -131,7 +131,7 @@ const SC=[
  {id:'set',t:'الأصناف والإعدادات',ic:'set',c:'k',subs:[['set','الأصناف والصلاحية'],['sct','التجار والمكاتب'],['sme','بياناتي والمظهر'],['sbk','النسخ الاحتياطي']]},
  {id:'inv',t:'فاتورة بيع مباشرة',ic:'inv',c:'g',subs:[['inv','إضافة فاتورة'],['ilog','سجل الفواتير']]}];
 const SEC_OF={inv:'inv',ilog:'inv',shp:'acc',off:'acc',sti:'stk',stk:'stk',dmg:'stk',sls:'stk',vch:'vch',vs:'vch',vq:'vch',box:'box',bnk:'box',bex:'box',rep:'rep',rmv:'rep',rpn:'rep',log:'log',set:'set',sct:'set',sme:'set',sbk:'set'};
-let LSUB={},PV=[];const VER='2026-11-05 · 7';
+let LSUB={},PV=[];const VER='2026-11-05 · 9';
 function go(t,nopush){if(t!=tab){po=0;QS='';vp='';DQ='';DP='all'}tab=t;sel=null;if(t=='rpn'&&pt!='month'){pt='month';po=0}if(t!='inv')LI=null;if(t!='sti')LS=null;const c=SEC_OF[t];if(c)LSUB[c]=t;render();try{if(!nopush)history.pushState({t},'');window.scrollTo(0,0)}catch(e){}}
 try{window.addEventListener('popstate',e=>go(e.state&&e.state.t||'home',1));history.replaceState({t:'home'},'')}catch(e){}
 function hdr(sc){const h=tab=='home';return`<div class="hb">${h?'':`<button class="hbtn" onclick="go('home')" aria-label="الرئيسية">${IC('home')}</button>`}<div class="ht">${h?'التاجر الحر':sc?sc.t:tab=='fnd'?'البحث':''}</div>${tab=='fnd'?'':`<button class="hbtn" onclick="go('fnd')" aria-label="بحث">${IC('search')}</button>`}</div>`}
@@ -206,7 +206,7 @@ function vInv(){if(S.draft.mode=='stock')return vInvS();const D=S.draft,td=iso(n
  <datalist id="shops">${S.shops.map(o=>`<option value="${esc(o)}">`).join('')}</datalist><datalist id="offs">${S.offs.map(o=>`<option value="${esc(o)}">`).join('')}</datalist>
  <table class="gt" style="margin-top:10px"><colgroup><col style="width:46px"><col style="width:14%"><col style="width:17%"><col style="width:27%"><col style="width:24%"><col style="width:15%"></colgroup>
  <tr><th></th><th>العدد</th><th>السعر ${SARH}</th><th>الصنف</th><th>الدلال</th><th>الربح ${SARH}</th></tr>
- <tr class="ent"><td><button class="pl" onclick="addLine()" aria-label="إضافة">＋</button></td><td>${nI('q')}</td><td>${nI('b')}</td><td><input id="item" type="text" autocomplete="off" placeholder="اكتب الصنف" oninput="sug()" onfocus="sug()" onchange="pick()" onblur="setTimeout(hideSug,200)"></td><td>${ta('off','off',D.off,'الدلال')}</td><td>${nI('p')}</td></tr>
+ <tr class="ent"><td><button class="pl add" onclick="addLine()" aria-label="إضافة">＋</button></td><td>${nI('q')}</td><td>${nI('b')}</td><td><input id="item" type="text" autocomplete="off" placeholder="اكتب الصنف" oninput="sug()" onfocus="sug()" onchange="pick()" onblur="setTimeout(hideSug,200)"></td><td>${ta('off','off',D.off,'الدلال')}</td><td>${nI('p')}</td></tr>
  ${G.map(g=>`<tr class="grp"><td colspan="6">👤 ${esc(g.s)||'بدون تاجر'} <span class="mut" style="float:left;font-weight:400">بيع ${M(g.L.reduce((a,[r])=>a+r.q*r.s,0))}</span></td></tr>`+g.L.map(([r,i])=>`<tr><td><button class="x" style="color:var(--tx)" onclick="editD(${i})">✎</button><button class="x" onclick="S.draft.lines.splice(${i},1);save();render()">×</button></td><td>${f(r.q)}</td><td>${f(r.b)}<small>بيع ${f(r.s)}</small></td><td>${esc(r.item)}</td><td>${esc(r.off)||'—'}</td><td class="${cl(r.s-r.b)}">${f(rd(r.s-r.b))}</td></tr>`).join('')).join('')}
  </table><small id="pv" class="mut" style="display:block;min-height:18px;margin-top:6px"></small>
  ${D.lines.length?`<div class="gf"><div class="tot"><div class="li"><span>إجمالي الشراء</span><b>${M(tb)}</b></div><div class="li"><span>إجمالي الربح</span><b class="${cl(ts-tb)}">${M(rd(ts-tb))}</b></div><div class="li"><b>إجمالي البيع</b><b class="big">${M(ts)}</b></div></div><button onclick="saveInv()">💾 حفظ (${G.length} ${G.length>1?'تجار':'تاجر'})</button></div>`:''}</div>`}
@@ -252,7 +252,7 @@ function vInvS(){const D=S.sd,td=iso(new Date());if(!D.d||(!D.lines.length&&D.t!
  <datalist id="offs">${S.offs.map(o=>`<option value="${esc(o)}">`).join('')}</datalist>
  <table class="gt" style="margin-top:10px"><colgroup><col style="width:46px"><col style="width:18%"><col style="width:22%"><col style="width:32%"><col style="width:28%"></colgroup>
  <tr><th></th><th>العدد</th><th>السعر ${SARH}</th><th>الصنف</th><th>الدلال</th></tr>
- <tr class="ent"><td><button class="pl" onclick="addLineS()" aria-label="إضافة">＋</button></td><td>${nI('q')}</td><td>${nI('b')}</td><td><input id="item" type="text" autocomplete="off" placeholder="اكتب الصنف" oninput="sug()" onfocus="sug()" onchange="pick()" onblur="setTimeout(hideSug,200)"></td><td>${ta('off','off',D.off,'الدلال')}</td></tr>
+ <tr class="ent"><td><button class="pl add" onclick="addLineS()" aria-label="إضافة">＋</button></td><td>${nI('q')}</td><td>${nI('b')}</td><td><input id="item" type="text" autocomplete="off" placeholder="اكتب الصنف" oninput="sug()" onfocus="sug()" onchange="pick()" onblur="setTimeout(hideSug,200)"></td><td>${ta('off','off',D.off,'الدلال')}</td></tr>
  ${G.map(g=>`<tr class="grp"><td colspan="5">🏪 ${esc(g.o)||'بدون دلال'} <span class="mut" style="float:left;font-weight:400">${M(g.L.reduce((a,[r])=>a+r.q*r.b,0))}</span></td></tr>`+g.L.map(([r,i])=>`<tr><td><button class="x" style="color:var(--tx)" onclick="editS(${i})">✎</button><button class="x" onclick="S.sd.lines.splice(${i},1);save();render()">×</button></td><td>${f(r.q)}</td><td>${f(r.b)}</td><td>${esc(r.item)}</td><td>${esc(r.off)||'—'}</td></tr>`).join('')).join('')}
  </table><small id="pv" class="mut" style="display:block;min-height:18px;margin-top:6px"></small>
  ${D.lines.length?`<div class="gf"><div class="tot"><div class="li"><b>إجمالي الشراء</b><b class="big">${M(tot)}</b></div></div><button onclick="saveStock()">💾 حفظ وإدخال للمخزون</button></div>`:''}<small class="mut" style="display:block;margin-top:8px">كل سطر يدخل المخزون كدفعة مستقلة برقمها وتاريخها وسعرها. ويصير للدلال حق عليك من لحظة الحفظ.</small></div>`+stInvList()}
@@ -312,8 +312,11 @@ function cancelB(id){const b=S.stock.find(x=>x.id==id);if(!b||!pinOk([b.d]))retu
 const dLoss=x=>{const b=S.stock.find(y=>y.id==x.bid);return b?rd(x.q*b.b-(x.v||0)):0};
 const num=id=>parseFloat(nrm($(id).value));
 let SDN=null;
-let SV={shop:'',d:'',m:'credit',pa:'',pat:0,open:0,pr:null,L:[],ci:'',cb:'0',cq:'',cp:'',cr:'',cf:''};
-const svReset=()=>{SV={shop:'',d:'',m:'credit',pa:'',pat:0,open:0,pr:null,L:[],ci:'',cb:'0',cq:'',cp:'',cr:'',cf:''}};
+const svDef=()=>({shop:'',d:'',m:'credit',pa:'',pat:0,open:0,pr:null,L:[],ci:'',cb:'0',cq:'',cp:'',cr:'',cf:''});
+let SV=Object.assign(svDef(),S.sv||{}),SVT=0;
+const svReset=()=>{SV=svDef();delete S.sv};
+const svPersist=()=>{S.sv=SV;clearTimeout(SVT);SVT=setTimeout(save,300)};
+const svTog=()=>{SV.open=!SV.open;svPersist();render()};
 const svCur=()=>SV.ci&&$('svq')?{item:SV.ci,q:num('svq'),bi:+(SV.cb||0),s:SV.cf=='p'&&!isNaN(num('svp'))?num('svp'):null,r:SV.cf=='r'&&!isNaN(num('svr'))?num('svr'):null}:null;
 const svBs=(item,virt)=>S.stock.filter(b=>!b.x&&b.item==item&&remB(b)-(virt[b.id]||0)>0.0001).sort((a,b)=>a.t-b.t||a.id-b.id);
 const svAv=(b,virt)=>rd(remB(b)-(virt[b.id]||0));
@@ -325,26 +328,26 @@ function svAlloc(L,virt,P){const A=[],er=[],bs=svBs(L.item,virt);let need=L.q;
 function svPlan(){const pe=$('svpr'),pf=pe?num('svpr'):parseFloat(nrm(SV.pr==null?S.sp:SV.pr)),P=isNaN(pf)?0:pf,virt={},rows=[],er=[],per=[];let tot=0,pt=0;
  SV.L.forEach((L,k)=>{const r=svAlloc(L,virt,P);er.push(...r.er);let lt=0;r.A.forEach(a=>{virt[a.b.id]=rd((virt[a.b.id]||0)+a.q);rows.push({b:a.b,q:a.q,s:a.s,k});lt+=a.q*a.s;pt+=a.q*(a.s-a.b.b)});tot+=lt;per[k]={t:rd(lt),h:r.A.map(a=>bno(a.b)+' ×'+f(a.q)+' @ '+f(a.s)).join(' · '),pr:r.A.reduce((x,a)=>x+a.q*(a.s-a.b.b),0)}});
  return{rows,er,per,virt,P,tot:rd(tot),pt:rd(pt)}}
-function vSls(){const pr=SV.pr==null?S.sp:SV.pr;let fm=`<div class="card"><button onclick="SV.open=!SV.open;render()">${SV.open?'إغلاق النموذج':'＋ فاتورة بيع جديدة لتاجر (عدة أصناف)'}</button>`;
+function vSls(){const pr=SV.pr==null?S.sp:SV.pr;let fm=`<div class="card"><button onclick="svTog()">${SV.open?'إغلاق النموذج (المسودة محفوظة)':SV.L.length?'متابعة مسودة الفاتورة ('+SV.L.length+' صنف)':'＋ فاتورة بيع جديدة لتاجر (عدة أصناف)'}</button>`;
  if(SV.open){const pl=svPlan(),av={};S.stock.filter(b=>!b.x).forEach(b=>{av[b.item]=rd((av[b.item]||0)+remB(b)-(pl.virt[b.id]||0))});const IT=Object.keys(av).filter(n=>av[n]>0.0001).sort((x,y)=>x.localeCompare(y,'ar'));
   fm+=`<label>التاجر</label>${ta('svt','',SV.shop,'اكتب اسم التاجر')}<div class="row"><div><label>التاريخ</label><input id="svd" type="date" value="${SV.d||iso(new Date())}" onchange="svCalc()"></div><div><label>الربح التلقائي للصنف الواحد (بالريال)</label><input id="svpr" type="text" inputmode="decimal" autocomplete="off" value="${esc(pr)}" oninput="svCalc()" onchange="svPr()"></div></div>`;
   fm+=`<div style="border:1px dashed var(--bd,#bbb);border-radius:12px;padding:10px;margin:10px 0"><b>إضافة صنف للفاتورة</b>`+(!IT.length?'<p class="mut">لا يوجد مخزون متوفر لإضافته.</p>':`<label>اختر الصنف من المخزون المتوفر</label><select id="svi" onchange="svPick(this.value)"><option value="">— اختر الصنف —</option>${IT.map(n=>`<option value="${esc(n)}" ${SV.ci==n?'selected':''}>${esc(n)} — متوفر ${f(av[n])}</option>`).join('')}</select>`);
   if(SV.ci&&av[SV.ci]>0.0001){const bs=svBs(SV.ci,pl.virt),c=bs.map(b=>b.b),same=c.every(x=>x==c[0]);
-   fm+=`<div class="mut" style="font-size:13px;margin-top:6px">سعر الشراء: ${same?M(c[0]):'حسب الدفعة'}</div>${bs.length>1?`<label>الدفعة (اختياري)</label><select id="svb" onchange="SV.cb=this.value;svCalc()"><option value="0">تلقائياً (الأقدم أولاً)</option>${bs.map(b=>`<option value="${b.id}" ${SV.cb==b.id?'selected':''}>${bno(b)} · متبقي ${f(svAv(b,pl.virt))} · شراء ${f(b.b)}</option>`).join('')}</select>`:''}<div class="row"><div><label>العدد الذي ستبيعه</label><input id="svq" placeholder="اكتب العدد الذي ستبيعه" type="text" inputmode="decimal" autocomplete="off" value="${esc(SV.cq)}" oninput="svCalc()"></div><div><label>سعر بيع الصنف الواحد (بالريال)</label><input id="svp" type="text" inputmode="decimal" autocomplete="off" value="${esc(SV.cp)}" oninput="svE('p')"></div></div><div class="row"><div><label>الربح في الصنف الواحد (بالريال)</label><input id="svr" type="text" inputmode="decimal" autocomplete="off" value="${esc(SV.cr)}" oninput="svE('r')"></div><div><label>إجمالي هذا الصنف (بالريال)</label><b id="svtot" style="display:block;padding:12px 0"></b></div></div><div id="svh" class="mut" style="font-size:13px"></div><div id="sver" class="neg" style="font-size:14px"></div><button onclick="svAdd()">＋ إضافة للفاتورة</button>`}
+   fm+=`<div class="mut" style="font-size:13px;margin-top:6px">سعر الشراء: ${same?M(c[0]):'حسب الدفعة'}</div>${bs.length>1?`<label>الدفعة (اختياري)</label><select id="svb" onchange="SV.cb=this.value;svCalc()"><option value="0">تلقائياً (الأقدم أولاً)</option>${bs.map(b=>`<option value="${b.id}" ${SV.cb==b.id?'selected':''}>${bno(b)} · متبقي ${f(svAv(b,pl.virt))} · شراء ${f(b.b)}</option>`).join('')}</select>`:''}<div class="row"><div><label>العدد الذي ستبيعه</label><input id="svq" placeholder="اكتب العدد الذي ستبيعه" type="text" inputmode="decimal" autocomplete="off" value="${esc(SV.cq)}" oninput="svCalc()"></div><div><label>سعر بيع الصنف الواحد (بالريال)</label><input id="svp" type="text" inputmode="decimal" autocomplete="off" value="${esc(SV.cp)}" oninput="svE('p')"></div></div><div class="row"><div><label>الربح في الصنف الواحد (بالريال)</label><input id="svr" type="text" inputmode="decimal" autocomplete="off" value="${esc(SV.cr)}" oninput="svE('r')"></div><div><label>إجمالي هذا الصنف (بالريال)</label><b id="svtot" style="display:block;padding:12px 0"></b></div></div><div id="svh" class="mut" style="font-size:13px"></div><div id="sver" class="neg" style="font-size:14px"></div><button class="add" onclick="svAdd()">＋ إضافة للفاتورة</button>`}
   fm+=`</div>`;
   fm+=SV.L.length?`<b>أصناف الفاتورة (${SV.L.length})</b><div>`+SV.L.map((L,k)=>`<div class="li"><div><b>${esc(L.item)}</b> — العدد ${f(L.q)}<small>${esc(pl.per[k].h)}</small></div><span style="display:flex;gap:6px;align-items:center"><b>${M(pl.per[k].t)}</b><button class="x" onclick="svDel(${k})">×</button></span></div>`).join('')+`</div><div class="row"><button class="alt" onclick="svHalf()">½ استبدالها بنصف المتوفر من كل صنف</button><button class="alt" onclick="svClr()">مسح الأصناف</button></div>`:`<div class="row"><button class="alt" onclick="svHalf()">½ إضافة نصف المتوفر من كل صنف دفعة واحدة</button></div>`;
   fm+=`<div class="row" style="margin-top:8px"><div><label>الدفع</label><select id="svm" onchange="svPay()"><option value="credit" ${SV.m=='credit'?'selected':''}>آجل</option><option value="cash" ${SV.m=='cash'?'selected':''}>كاش</option><option value="bank" ${SV.m=='bank'?'selected':''}>بنك</option></select></div><div id="svpw" style="display:${SV.m=='credit'?'none':'block'}"><label>المدفوع الآن</label><input id="svpa" type="text" inputmode="decimal" autocomplete="off" value="${esc(SV.pa)}" oninput="SV.pat=1;SV.pa=this.value"></div></div><div id="svsum" style="margin:8px 0"></div><button onclick="svSave()">حفظ وإصدار فاتورة</button>`}
  return vDocs('sls').replace('</h1>','</h1>'+fm+'</div>')}
-function svPr(){const x=num('svpr');if(!isNaN(x)&&x>=0){S.sp=x;save()}}
+function svPr(){const x=num('svpr');if(!isNaN(x)&&x>=0){S.sp=x;svPersist()}}
 function svPay(){SV.m=$('svm').value;$('svpw').style.display=SV.m=='credit'?'none':'block';svCalc()}
-function svPick(v){SV.ci=v;SV.cb='0';SV.cq='';SV.cp='';SV.cr='';SV.cf='';render();const e=$('svq');if(e)e.focus()}
-function svHalf(){const P=isNaN(num('svpr'))?0:num('svpr'),m={};S.stock.filter(b=>!b.x&&remB(b)>0.0001).forEach(b=>m[b.item]=rd((m[b.item]||0)+remB(b)));SV.L=Object.keys(m).sort((x,y)=>x.localeCompare(y,'ar')).map(n=>{const g=m[n];return{item:n,q:g%1==0?Math.max(1,Math.floor(g/2)):rd(g/2),bi:0,s:null,r:P}});SV.pat=0;SV.ci='';render()}
-function svClr(){SV.L=[];SV.ci='';SV.pat=0;render()}
-function svDel(k){SV.L.splice(k,1);SV.pat=0;render()}
+function svPick(v){SV.ci=v;SV.cb='0';SV.cq='';SV.cp='';SV.cr='';SV.cf='';svPersist();render();const e=$('svq');if(e)e.focus()}
+function svHalf(){const P=isNaN(num('svpr'))?0:num('svpr'),m={};S.stock.filter(b=>!b.x&&remB(b)>0.0001).forEach(b=>m[b.item]=rd((m[b.item]||0)+remB(b)));SV.L=Object.keys(m).sort((x,y)=>x.localeCompare(y,'ar')).map(n=>{const g=m[n];return{item:n,q:g%1==0?Math.max(1,Math.floor(g/2)):rd(g/2),bi:0,s:null,r:P}});SV.pat=0;SV.ci='';svPersist();render()}
+function svClr(){SV.L=[];SV.ci='';SV.pat=0;svPersist();render()}
+function svDel(k){SV.L.splice(k,1);SV.pat=0;svPersist();render()}
 function svE(k){const v=$(k=='p'?'svp':'svr').value.trim();SV.cf=v===''?'':k;svCalc(k)}
 function svAdd(){svCalc();const c=svCur();if(!c)return toast('اختر الصنف أولاً');if(!(c.q>0))return toast('اكتب العدد الذي ستبيعه');
  const pl=svPlan(),r=svAlloc(c,pl.virt,pl.P);if(r.er.length)return toast(r.er[0]);if(r.A.some(a=>isNaN(a.s)||a.s<0))return toast('تأكد من سعر البيع');
- SV.L.push({item:c.item,q:c.q,bi:c.bi,s:c.s,r:c.s!=null?null:(c.r!=null?c.r:pl.P)});SV.ci='';SV.cb='0';SV.cq='';SV.cp='';SV.cr='';SV.cf='';SV.pat=0;render();toast('أُضيف ✓ — اختر الصنف التالي')}
+ SV.L.push({item:c.item,q:c.q,bi:c.bi,s:c.s,r:c.s!=null?null:(c.r!=null?c.r:pl.P)});SV.ci='';SV.cb='0';SV.cq='';SV.cp='';SV.cr='';SV.cf='';SV.pat=0;svPersist();render();toast('أُضيف ✓ — اختر الصنف التالي')}
 function svCalc(ei,ek){if(!$('svpr'))return;const P=isNaN(num('svpr'))?0:num('svpr');SV.pr=$('svpr').value;SV.d=$('svd').value;
  const pl=svPlan();
  if(SV.ci&&$('svq')){const bs=svBs(SV.ci,pl.virt),bi=+(SV.cb||0),B=bi?bs.filter(b=>b.id==bi):bs,c=B.map(b=>b.b),same=c.length&&c.every(x=>x==c[0]),pe=$('svp'),re=$('svr'),fl=SV.cf;
@@ -354,7 +357,7 @@ function svCalc(ei,ek){if(!$('svpr'))return;const P=isNaN(num('svpr'))?0:num('sv
   const cu=svCur(),q=cu.q,r=q>0?svAlloc(cu,pl.virt,P):{A:[],er:[]};
   $('svh').textContent=r.A.map(a=>bno(a.b)+' ×'+f(a.q)+' @ '+f(a.s)).join(' · ');$('svtot').innerHTML=r.A.length?M(r.A.reduce((x,a)=>x+a.q*a.s,0)):'';$('sver').textContent=r.er.join(' ')}
  if(SV.m!='credit'&&!SV.pat){SV.pa=pl.tot>0?String(pl.tot):'';const e=$('svpa');if(e)e.value=SV.pa}
- $('svsum').innerHTML=pl.er.length?`<span class="neg">${pl.er.map(esc).join('<br>')}</span>`:pl.rows.length?`${SV.L.length} صنف · الإجمالي <b>${M(pl.tot)}</b> · ${pl.pt<0?'خسارة':'الربح'} <b class="${pl.pt<0?'neg':'pos'}">${M(Math.abs(pl.pt))}</b>`:'<span class="mut">اختر صنفاً واكتب العدد ثم اضغط «إضافة للفاتورة»</span>'}
+ $('svsum').innerHTML=pl.er.length?`<span class="neg">${pl.er.map(esc).join('<br>')}</span>`:pl.rows.length?`${SV.L.length} صنف · الإجمالي <b>${M(pl.tot)}</b> · ${pl.pt<0?'خسارة':'الربح'} <b class="${pl.pt<0?'neg':'pos'}">${M(Math.abs(pl.pt))}</b>`:'<span class="mut">اختر صنفاً واكتب العدد ثم اضغط «إضافة للفاتورة»</span>';svPersist()}
 function svSave(){const p=svPlan(),shop=(SV.shop||$('svt').value).trim(),d=$('svd').value,pm=SV.m;SV.d=d;
  if(!shop)return toast('اكتب اسم التاجر');if(!d)return toast('اختر التاريخ');if(p.er.length)return toast(p.er[0]);if(!p.rows.length)return toast('أضف صنفاً واحداً على الأقل للفاتورة');
  let pa=0;if(pm!='credit'){const x=String(SV.pa).trim();pa=x===''?p.tot:parseFloat(nrm(x));if(isNaN(pa)||pa<0)return toast('تأكد من المبلغ المدفوع');if(pa>p.tot+0.005)return toast('المدفوع أكبر من إجمالي الفاتورة')}
@@ -555,7 +558,7 @@ function sugX(id){const el=$(id);if(!el)return;SXI=id;const L=(id=='trd'||id=='s
  if(!r.length||(r.length==1&&nz(r[0])==q)){b.style.display='none';return}
  const R=el.getBoundingClientRect(),w=Math.min(innerWidth-16,Math.max(R.width,200));let l=Math.max(8,R.left);if(l+w>innerWidth-8)l=innerWidth-8-w;
  b.innerHTML=r.map((n,i)=>`<div onmousedown="event.preventDefault()" onclick="sxPick(${i})">${esc(n)}</div>`).join('');b.style.cssText=`display:block;left:${l}px;top:${R.bottom+4}px;width:${w}px`}
-function setX(id,v){v=(v||'').trim();const L=(id=='trd'||id=='svt')?S.shops:S.offs,m=L.find(x=>nz(x)==nz(v));if(m){v=m;$(id).value=m}if(id=='svt'){SV.shop=v;return}if(id=='trd')S.draft.shop=v;else DS().off=v;save()}
+function setX(id,v){v=(v||'').trim();const L=(id=='trd'||id=='svt')?S.shops:S.offs,m=L.find(x=>nz(x)==nz(v));if(m){v=m;$(id).value=m}if(id=='svt'){SV.shop=v;svPersist();return}if(id=='trd')S.draft.shop=v;else DS().off=v;save()}
 function sxPick(i){const id=SXI,v=SGL[i];$(id).value=v;hideSug();setX(id,v);if(id=='svt'){const e=$('svq0');if(e)e.focus();return}const nx=(id=='trd'?['item','q','b','p']:['item','q','b','p']).find(x=>$(x)&&$(x).value==='');if(nx&&$(nx))$(nx).focus()}
 function newChk(L,n,lab,cb){const m=L.find(x=>nz(x)==nz(n));if(m)return cb(m);ask(`${lab} «${esc(n)}» غير موجود في القائمة. إضافته كجديد؟`,()=>{L.push(n);save();cb(n)})}
 const DS=()=>S.draft.mode=='stock'?S.sd:S.draft;
