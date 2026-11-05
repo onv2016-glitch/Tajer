@@ -131,7 +131,7 @@ const SC=[
  {id:'set',t:'الأصناف والإعدادات',ic:'set',c:'k',subs:[['set','الأصناف والصلاحية'],['sct','التجار والمكاتب'],['sme','بياناتي والمظهر'],['sbk','النسخ الاحتياطي']]},
  {id:'inv',t:'فاتورة بيع مباشرة',ic:'inv',c:'g',subs:[['inv','إضافة فاتورة'],['ilog','سجل الفواتير']]}];
 const SEC_OF={inv:'inv',ilog:'inv',shp:'acc',off:'acc',sti:'stk',stk:'stk',dmg:'stk',sls:'stk',vch:'vch',vs:'vch',vq:'vch',box:'box',bnk:'box',bex:'box',rep:'rep',rmv:'rep',rpn:'rep',log:'log',set:'set',sct:'set',sme:'set',sbk:'set'};
-let LSUB={},PV=[];const VER='2026-11-05 · 9';
+let LSUB={},PV=[];const VER='2026-11-05 · 10';
 function go(t,nopush){if(t!=tab){po=0;QS='';vp='';DQ='';DP='all'}tab=t;sel=null;if(t=='rpn'&&pt!='month'){pt='month';po=0}if(t!='inv')LI=null;if(t!='sti')LS=null;const c=SEC_OF[t];if(c)LSUB[c]=t;render();try{if(!nopush)history.pushState({t},'');window.scrollTo(0,0)}catch(e){}}
 try{window.addEventListener('popstate',e=>go(e.state&&e.state.t||'home',1));history.replaceState({t:'home'},'')}catch(e){}
 function hdr(sc){const h=tab=='home';return`<div class="hb">${h?'':`<button class="hbtn" onclick="go('home')" aria-label="الرئيسية">${IC('home')}</button>`}<div class="ht">${h?'التاجر الحر':sc?sc.t:tab=='fnd'?'البحث':''}</div>${tab=='fnd'?'':`<button class="hbtn" onclick="go('fnd')" aria-label="بحث">${IC('search')}</button>`}</div>`}
@@ -341,8 +341,10 @@ function vSls(){const pr=SV.pr==null?S.sp:SV.pr;let fm=`<div class="card"><butto
 function svPr(){const x=num('svpr');if(!isNaN(x)&&x>=0){S.sp=x;svPersist()}}
 function svPay(){SV.m=$('svm').value;$('svpw').style.display=SV.m=='credit'?'none':'block';svCalc()}
 function svPick(v){SV.ci=v;SV.cb='0';SV.cq='';SV.cp='';SV.cr='';SV.cf='';svPersist();render();const e=$('svq');if(e)e.focus()}
-function svHalf(){const P=isNaN(num('svpr'))?0:num('svpr'),m={};S.stock.filter(b=>!b.x&&remB(b)>0.0001).forEach(b=>m[b.item]=rd((m[b.item]||0)+remB(b)));SV.L=Object.keys(m).sort((x,y)=>x.localeCompare(y,'ar')).map(n=>{const g=m[n];return{item:n,q:g%1==0?Math.max(1,Math.floor(g/2)):rd(g/2),bi:0,s:null,r:P}});SV.pat=0;SV.ci='';svPersist();render()}
-function svClr(){SV.L=[];SV.ci='';SV.pat=0;svPersist();render()}
+function svHalf(){ask('سيتم إضافة نصف الكمية المتوفرة من كل صنف إلى الفاتورة'+(SV.L.length?' <b>وستُستبدل الأصناف المضافة حالياً</b>':'')+'. ولن تُحفظ الفاتورة إلا بعد ضغط «حفظ وإصدار فاتورة».<br>هل أنت متأكد؟',svHalfGo)}
+function svHalfGo(){const P=isNaN(num('svpr'))?0:num('svpr'),m={};S.stock.filter(b=>!b.x&&remB(b)>0.0001).forEach(b=>m[b.item]=rd((m[b.item]||0)+remB(b)));SV.L=Object.keys(m).sort((x,y)=>x.localeCompare(y,'ar')).map(n=>{const g=m[n];return{item:n,q:g%1==0?Math.max(1,Math.floor(g/2)):rd(g/2),bi:0,s:null,r:P}});SV.pat=0;SV.ci='';svPersist();render()}
+function svClr(){if(!SV.L.length)return toast('لا توجد أصناف مضافة');ask('هل أنت متأكد من حذف جميع الأصناف المضافة بالفاتورة؟',svClrGo)}
+function svClrGo(){SV.L=[];SV.ci='';SV.pat=0;svPersist();render()}
 function svDel(k){SV.L.splice(k,1);SV.pat=0;svPersist();render()}
 function svE(k){const v=$(k=='p'?'svp':'svr').value.trim();SV.cf=v===''?'':k;svCalc(k)}
 function svAdd(){svCalc();const c=svCur();if(!c)return toast('اختر الصنف أولاً');if(!(c.q>0))return toast('اكتب العدد الذي ستبيعه');
