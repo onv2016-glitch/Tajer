@@ -139,7 +139,7 @@ const SC=[
  {id:'set',t:'الأصناف والإعدادات',ic:'set',c:'k',subs:[['set','الأصناف والصلاحية'],['sct','العملاء والمكاتب'],['sme','بياناتي والمظهر'],['sbk','النسخ الاحتياطي']]}
 ];
 const SEC_OF={inv:'inv',ilog:'inv',shp:'acc',off:'acc',sti:'stk',stk:'stk',sld:'stk',dmg:'stk',sls:'inv',vch:'vch',vs:'vch',vq:'vch',box:'box',bnk:'box',bex:'box',rep:'rep',rmv:'rep',rpn:'rep',rall:'rep',log:'log',ob:'ob',set:'set',sct:'set',sme:'set',sbk:'set'};
-let LSUB={},PV=[];const VER='2026-11-10 · 33';
+let LSUB={},PV=[];const VER='2026-11-10 · 34';
 let NVS=[],PBK=0,LEAVING=0;
 function go(t,nopush){const t0=tab,sm=t0!=t&&SEC_OF[t0]&&SEC_OF[t0]==SEC_OF[t];if(t!=tab&&!nopush&&!PBK&&!sm){NVS.push(tab);if(NVS.length>30)NVS.shift()}if(t!=tab){po=0;QS='';vp='';DQ='';DP='all'}tab=t;sel=null;if(t=='rpn'&&pt!='month'){pt='month';po=0}if(t!='inv')LI=null;if(t!='sti')LS=null;const c=SEC_OF[t];if(c)LSUB[c]=t;render();try{if(!nopush){if(sm)history.replaceState({t},'');else history.pushState({t},'')}window.scrollTo(0,0)}catch(e){}}
 try{window.addEventListener('popstate',e=>{const t=e.state&&e.state.t||'home';if(LEAVING){LEAVING=0;go(t,1);return}if(t!=tab&&dirtyForm()){try{history.pushState({t:tab},'')}catch(x){}leaveAsk(()=>{LEAVING=1;history.back()});return}go(t,1)});history.replaceState({t:'home'},'')}catch(e){}
@@ -231,7 +231,7 @@ function sug(){const el=$('item');if(!el)return;const q=nz(el.value);let r=S.ite
  const R=el.getBoundingClientRect(),w=Math.min(innerWidth-16,Math.max(R.width,200));let l=Math.max(8,R.left);if(l+w>innerWidth-8)l=innerWidth-8-w;
  b.innerHTML=SGL.map((n,i)=>`<div onmousedown="event.preventDefault()" onclick="sgPick(${i})">${esc(n)}</div>`).join('');b.style.cssText=`display:block;left:${l}px;top:${R.bottom+4}px;width:${w}px`}
 function sgPick(i){$('item').value=SGL[i];hideSug();pick();const nx=['q','b','p'].find(x=>$(x)&&$(x).value==='');if(nx)$(nx).focus()}
-function pick(){const it=S.items.find(i=>nz(i.n)==nz($('item').value));if(it){$('item').value=it.n;const lb=S.draft.mode=='stock'?[...S.stock].reverse().find(x=>x.item==it.n&&!x.x):null,pb=lb?lb.b:it.b;if($('b').value==='')$('b').value=pb===''||pb==null?'':pb;if($('p')&&$('p').value==='')$('p').value=it.p===''||it.p==null?'':it.p;calc()}}
+function pick(){const it=S.items.find(i=>nz(i.n)==nz($('item').value));if(it){$('item').value=it.n;const lb=S.draft.mode=='stock'?[...S.stock].reverse().find(x=>x.item==it.n&&!x.x):null,pb=lb?lb.b:it.b;if($('b').value===''&&$('p'))$('b').value=pb===''||pb==null?'':pb;if($('p')&&$('p').value==='')$('p').value=it.p===''||it.p==null?'':it.p;calc()}}
 function calc(){const g=i=>$(i)?parseFloat($(i).value):NaN,e=$('pv');if(!e)return;const q=g('q')||0,b=g('b'),p=g('p')||0;e.innerHTML=isNaN(b)?'':S.draft.mode=='stock'?`الإجمالي ${M(rd(q*b))}`:`سعر البيع ${M(rd(b+p))} · الإجمالي ${M(rd(q*(b+p)))}`}
 function addLine(){const v=i=>parseFloat($(i).value),t=$('item').value.trim(),b=v('b'),q=v('q'),pp=v('p'),p=isNaN(pp)?0:pp,shop=(S.draft.shop||'').trim(),off=$('off').value.trim();
  if(!shop)return toast('اختر العميل');if(!t)return toast('اكتب الصنف');if(!S.shops.includes(shop)){const m=S.shops.find(x=>nz(x)==nz(shop));if(m){S.draft.shop=m;$('trd').value=m;return addLine()}return newChk(S.shops,shop,'العميل',()=>addLine())}if(off&&!S.offs.includes(off)){const m=S.offs.find(x=>nz(x)==nz(off));if(m){$('off').value=m;S.draft.off=m;return addLine()}return newChk(S.offs,off,'الدلال',()=>addLine())}if(!(q>0))return toast('اكتب العدد');if(isNaN(b))return toast('اكتب سعر الشراء');
